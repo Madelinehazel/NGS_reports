@@ -46,7 +46,7 @@ def main(report, proband_id, report_type, file, maternal_id, paternal_id):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description='Generates excel report from wes csv with variants grouped by inheritance pattern')
     parser.add_argument('-report', type=str, help='input report csv')
-    parser.add_argument('-report_type', type=str, help='input report csv')
+    parser.add_argument('-report_type', type=str, help='singleton or trio')
     parser.add_argument('-proband_id', type=str, help='proband sample id')
     parser.add_argument('-maternal_id', type=str, help='maternal sample id', default=None)
     parser.add_argument('-paternal_id', type=str, help='paternal sample id', default=None)

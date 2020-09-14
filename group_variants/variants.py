@@ -44,7 +44,7 @@ def hemizygous(variants, proband, mother, father, report_type):
 def dominant_nonOMIM(variants, proband):
     variants_filtered = variants[(variants[get_zygosity(proband)] == 'Het')]
     variants_filtered = variants_filtered[variants_filtered['omim_phenotype']
-                                          != variants_filtered['omim_phenotype']]
+                                          == '.']
     variants_filtered = variants_filtered.sort_values(['Gnomad_ac', 'Gene'])
     return variants_filtered
 
@@ -91,7 +91,7 @@ def compound_het(variants, proband, maternal_id, paternal_id, report_type):
 
 
 def dominant_OMIM(variants, proband):
-    variants_filtered = variants[(variants['omim_phenotype'] == variants['omim_phenotype']) & (
+    variants_filtered = variants[(variants['omim_phenotype'] != '.') & (
         variants[get_zygosity(proband)] == 'Het')]
 
     variants_filtered = variants_filtered.sort_values(
