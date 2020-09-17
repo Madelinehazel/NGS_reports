@@ -45,7 +45,7 @@ def dominant_nonOMIM(variants, proband):
     variants_filtered = variants[(variants[get_zygosity(proband)] == 'Het')]
     variants_filtered = variants_filtered[(variants_filtered['omim_phenotype']
                                           != variants_filtered['omim_phenotype']) 
-					& (variants_filtered['omim_phenotype'] != '.')]
+					| (variants_filtered['omim_phenotype'] == '.')]
     variants_filtered = variants_filtered.sort_values(['Gnomad_ac', 'Gene'])
     return variants_filtered
 
