@@ -12,7 +12,7 @@ def get_burden(sample_id):
     return burden
 
 
-def autosomal_recessive(variants, proband, maternal_id, paternal_id, report_type):
+def autosomal_recessive(variants, proband, mother, father, report_type):
     if report_type == 'singleton':
         variants_filtered = variants[(variants[get_zygosity(proband)] == 'Hom')
                                  & (variants['Position'].str.contains('X') == False)]
@@ -28,7 +28,7 @@ def hemizygous(variants, proband, mother, father, report_type):
     if report_type == 'singleton':
         variants_filtered = variants[(variants[get_zygosity(proband)] == 'Hom')
                                  & (variants['Position'].str.contains('X') == True)]
-    elif report_tpye == 'trio':
+    elif report_type == 'trio':
         variants_filtered = variants[(variants[get_zygosity(proband)] == 'Hom')]
         # hemizygous variants inherited from mom
         variants_filtered_mat = variants_filtered[(variants_filtered[get_zygosity(mother)] == 'Het')
@@ -36,7 +36,7 @@ def hemizygous(variants, proband, mother, father, report_type):
         # hemizygous variants inherited from dad
         variants_filtered_pat = variants_filtered[(variants_filtered[get_zygosity(mother)] == '-')
                                               & (variants_filtered[get_zygosity(father)] == 'Het')]
-        variants_filtered_all = pd.concat([variants_filtered_mat, variants_filtered_pat], ignore_index=True)
+        variants_filtered = pd.concat([variants_filtered_mat, variants_filtered_pat], ignore_index=True)
     variants_filtered = variants_filtered.sort_values(['omim_phenotype', 'Gene'])
     return variants_filtered
 
@@ -58,7 +58,7 @@ def denovo(variants, proband, mother, father):
     return variants_filtered
 
 
-def compound_het(variants, proband, maternal_id, paternal_id, report_type):
+def compound_het(variants, proband, mother, father, report_type):
     # this function captures quite a bit of junky misaligned variants where
     # the burden is high in all samples.
     variants_burden = variants[(variants[get_burden(proband)] >= 2)]
