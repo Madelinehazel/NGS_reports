@@ -35,8 +35,8 @@ def main(
     cols = [cols[-1]] + cols[:-1]
     report = report[cols]
 
-    # filter out variants with quality < 400
-    report = report[report["Quality"] >= 400]
+    # filter out variants with quality < 300
+    report = report[report["Quality"] >= 300]
 
     # get variants by inheritance pattern
     AR = variants.autosomal_recessive(
