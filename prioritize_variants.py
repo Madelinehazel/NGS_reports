@@ -38,6 +38,16 @@ def main(
     # filter out variants with quality < 300
     report = report[report["Quality"] >= 300]
 
+    # if it's a singleton, apply gnomAD, C4R counts, and impact filters to all variants
+    if report_type == "singleton":
+        report = report[report["Frequency_in_C4R"] < 100]
+        report = report[report["Gnomad_hom"] == 0]
+        report = report[
+            report.apply(
+                lambda x: variants.filter_impact(x.Variation, x.Clinvar), axis=1
+            )
+        ]
+
     # get variants by inheritance pattern
     AR = variants.autosomal_recessive(
         report, proband_id, maternal_id, paternal_id, report_type
@@ -53,19 +63,17 @@ def main(
         de_novo = variants.denovo(report, proband_id, maternal_id, paternal_id)
     else:
         dominant_nonOMIM = variants.dominant_nonOMIM(report, proband_id)
-
+        dominant_nonOMIM = dominant_nonOMIM[
+            dominant_nonOMIM["Exac_pli_score"].apply(variants.filter_pli)
+        ]
+        dominant_nonOMIM = dominant_nonOMIM[
+            dominant_nonOMIM["Variation"].apply(variants.filter_lof)
+        ]
     # if variants are annotated with a panel, add a tab containing all variants falling in panel
     if panel:
         panel_variants = variants.panel(report, proband_id)
         panel_variants = panel_variants[
             panel_variants["Cadd_score"].apply(variants.filter_cadd)
-        ]
-        panel_variants = panel_variants[panel_variants["Frequency_in_C4R"] < 50]
-        panel_variants = panel_variants[panel_variants["Gnomad_hom"] == 0]
-        panel_variants = panel_variants[
-            panel_variants.apply(
-                lambda x: variants.filter_impact(x.Variation, x.Clinvar), axis=1
-            )
         ]
 
     # write report
@@ -74,6 +82,10 @@ def main(
         if report_type == "trio":
             de_novo.to_excel(writer, sheet_name="De_novo", index=False)
         else:
+            summary = pd.read_csv(
+                "/hpf/largeprojects/ccmbio/mcouse/tools/NGS_reports/summary_pages/singleton.csv"
+            )
+            summary.to_excel(writer, sheet_name="Summary", index=False)
             dominant_nonOMIM.to_excel(
                 writer, sheet_name="Dominant_nonOMIM", index=False
             )

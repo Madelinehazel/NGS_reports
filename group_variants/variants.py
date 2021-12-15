@@ -57,7 +57,8 @@ def dominant_nonOMIM(variants, proband):
     variants_filtered = variants[(variants[get_zygosity(proband)] == "Het")]
     variants_filtered = variants_filtered[
         (variants_filtered["omim_phenotype"] != variants_filtered["omim_phenotype"])
-        | (variants_filtered["omim_phenotype"] == ".")]
+        | (variants_filtered["omim_phenotype"] == ".")
+    ]
     variants_filtered = variants_filtered.sort_values(["Gnomad_ac", "Gene"])
     return variants_filtered
 
@@ -124,7 +125,10 @@ def compound_het(variants, proband, mother, father, report_type):
 def dominant_OMIM(variants, proband):
     variants_filtered = variants[
         (variants["omim_phenotype"] != ".")
-        & ((variants["omim_phenotype"] == variants["omim_phenotype"]) | (variants["omim_phenotype"].notnull()))
+        & (
+            (variants["omim_phenotype"] == variants["omim_phenotype"])
+            | (variants["omim_phenotype"].notnull())
+        )
         & (variants[get_zygosity(proband)] == "Het")
     ]
 
@@ -246,3 +250,26 @@ def parse_id(family_id, sample_id):
     sample_id = sample_id.replace("-", "_")
     id = family_id + "_" + sample_id
     return id
+
+
+def filter_pli(pli):
+    if pli == ".":
+        return False
+    elif float(pli) >= 0.95:
+        return True
+    else:
+        return False
+
+
+def filter_lof(impact):
+    impacts = [
+        "frameshift_variant",
+        "splice_acceptor_variant",
+        "splice_donor_variant",
+        "start_lost",
+        "stop_gained",
+    ]
+    if impact in impacts:
+        return True
+    else:
+        return False
