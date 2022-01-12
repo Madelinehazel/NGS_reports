@@ -40,12 +40,18 @@ def main(
 
     # if it's a trio, apply gnomAD, C4R counts filters
     if report_type == "trio":
-        report = report[report["Frequency_in_C4R"] < 100]
+        try:
+            report = report[report["Frequency_in_C4R"] < 100]
+        except KeyError:
+            report = report[report["C4R_WES_counts"] < 100]
         report = report[report["Gnomad_hom"] == 0]
 
     # if it's a singleton, apply gnomAD, C4R counts, and impact filters to all variants
     if report_type == "singleton":
-        report = report[report["Frequency_in_C4R"] < 100]
+        try:
+            report = report[report["Frequency_in_C4R"] < 100]
+        except KeyError:
+            report = report[report["C4R_WES_counts"] < 100]
         report = report[report["Gnomad_hom"] == 0]
         report = report[
             report.apply(
