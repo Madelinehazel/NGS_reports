@@ -38,6 +38,11 @@ def main(
     # filter out variants with quality < 300
     report = report[report["Quality"] >= 300]
 
+    # if it's a trio, apply gnomAD, C4R counts filters
+    if report_type == "trio":
+        report = report[report["Frequency_in_C4R"] < 100]
+        report = report[report["Gnomad_hom"] == 0]
+
     # if it's a singleton, apply gnomAD, C4R counts, and impact filters to all variants
     if report_type == "singleton":
         report = report[report["Frequency_in_C4R"] < 100]
@@ -80,6 +85,10 @@ def main(
     with pd.ExcelWriter("%s_formatted.xlsx" % file) as writer:
         workbook = writer.book
         if report_type == "trio":
+            summary = pd.read_csv(
+                "/hpf/largeprojects/ccmbio/mcouse/tools/NGS_reports/summary_pages/trio.csv"
+            )
+            summary.to_excel(writer, sheet_name="Summary", index=False)
             de_novo.to_excel(writer, sheet_name="De_novo", index=False)
         else:
             summary = pd.read_csv(
