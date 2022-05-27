@@ -35,8 +35,6 @@ def main(
     cols = [cols[-1]] + cols[:-1]
     report = report[cols]
 
-    # filter out variants with quality < 300
-    report = report[report["Quality"] >= 300]
 
     # if it's a trio, apply gnomAD, C4R counts filters
     if report_type == "trio":
@@ -77,9 +75,12 @@ def main(
         dominant_nonOMIM = dominant_nonOMIM[
             dominant_nonOMIM["Exac_pli_score"].apply(variants.filter_pli)
         ]
-        dominant_nonOMIM = dominant_nonOMIM[
-            dominant_nonOMIM["Variation"].apply(variants.filter_lof)
-        ]
+        try:
+            dominant_nonOMIM = dominant_nonOMIM[
+                dominant_nonOMIM["Variation"].apply(variants.filter_lof)
+            ]
+        except KeyError:
+            print("No LoF variants with plI >= 0.95")
     # if variants are annotated with a panel, add a tab containing all variants falling in panel
     if panel:
         panel_variants = variants.panel(report, proband_id)
