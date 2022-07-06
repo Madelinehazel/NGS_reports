@@ -28,6 +28,9 @@ def main(
             variant["Refseq_change"],
             variant["Variation"],
             variant["Gene"],
+            variant['C4R_WES_counts'],
+            variant['Quality'],
+            variant['Exac_pli_score']
         )
         summaries.append(summary)
     report["Summary"] = summaries
@@ -136,7 +139,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     file = args.report.strip(".csv")
-    report = pd.read_csv(args.report, encoding="latin1")
+    try:
+        report = pd.read_csv(args.report, encoding="latin1")
+    except:
+        report = pd.read_csv(args.report, encoding="latin1", sep="\t")
 
     main(
         report,

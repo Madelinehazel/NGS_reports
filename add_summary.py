@@ -6,9 +6,15 @@ def main(report, file):
     summaries = []
     # add summary for each variant describing pathogenicity predictions and gnomad frequency
     for index, variant in report.iterrows():
-        summary = variants.summary_field(variant['Cadd_score'], variant['Sift_score'], variant['Polyphen_score'], variant['Vest3_score'],
-                            variant['Revel_score'], variant['Gnomad_ac'], variant['Gnomad_hom'], variant['Refseq_change'],
-                            variant['Variation'], variant['Gene'])
+        try:
+            summary = variants.summary_field(variant['Cadd_score'], variant['Sift_score'], variant['Polyphen_score'], variant['Vest3_score'],
+                                variant['Revel_score'], variant['Gnomad_ac'], variant['Gnomad_hom'], variant['Refseq_change'],
+                                variant['Variation'], variant['Gene'], variant['C4R_WES_counts'], variant['Quality'], variant['Exac_pli_score'])
+        except KeyError:
+            summary = variants.summary_field(variant['Cadd_score'], variant['Sift_score'], variant['Polyphen_score'], variant['Vest3_score'],
+                    variant['Revel_score'], variant['Gnomad_ac'], variant['Gnomad_hom'], variant['Refseq_change'],
+                    variant['Variation'], variant['Gene'], variant['Frequency_in_C4R'], variant['Quality'], variant['Exac_pli_score'])
+
         summaries.append(summary)
     report['Summary'] = summaries
     cols = list(report.columns)

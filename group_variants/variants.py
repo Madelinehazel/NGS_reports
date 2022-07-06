@@ -157,6 +157,9 @@ def summary_field(
     variant_transcript,
     variant_type,
     gene,
+    c4r,
+    qual,
+    pli
 ):
     num_tools = 0
     pathogenic_count = 0
@@ -202,15 +205,23 @@ def summary_field(
     else:
         num_tools += 1
 
-    summary = "CADD = {}; {}/{} tools predict an impact. {} alleles and {} homozygote(s) in gnomAD. {} is a {} variant in {}.".format(
+    try:
+        qual = round(float(qual))
+    except:
+        pass
+
+    summary = "CADD = {}; {}/{} tools predict an impact. {} alleles and {} homozygote(s) in gnomAD. Seen {} time(s) in C4R. Quality: {}. {} is a {} variant in {}. Gene plI: {}".format(
         cadd,
         pathogenic_count,
         num_tools,
         gnomad_ac,
         gnomad_hom,
+        c4r,
+        qual,
         variant_transcript,
         variant_type,
         gene,
+        pli
     )
     return summary
 
